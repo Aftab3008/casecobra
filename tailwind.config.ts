@@ -19,6 +19,15 @@ const config = {
     },
     extend: {
       colors: {
+        // zinc: {
+        //   900: "#18181B",
+        // },
+        // blue: {
+        //   950: "#172554",
+        // },
+        // rose: {
+        //   950: "#881337",
+        // },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
