@@ -17,7 +17,7 @@ import {
   RadioGroup,
   Label as HeadLable,
 } from "@headlessui/react";
-import { useRef, useState } from "react";
+import { use, useRef, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { COLORS } from "@/validators/option-validators";
 import { BASE_PRICE, FINISHES, MATERIALS, MODELS } from "@/constants";
@@ -30,7 +30,12 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckIcon, ChevronsUpDown } from "lucide-react";
+import { ArrowRight, CheckIcon, ChevronsUpDown, Loader2 } from "lucide-react";
+import { useUploadThing } from "@/lib/uploadthing";
+import { toast } from "sonner";
+import { useMutation } from "@tanstack/react-query";
+import { saveConfig, SaveConfigArgs } from "@/lib/actions/actions";
+import { useRouter } from "next/navigation";
 
 interface DesignConfiguratorProps {
   configId: string;
@@ -50,6 +55,7 @@ export default function DesignConfigurator({
   imageDimensions,
   imageUrl,
 }: DesignConfiguratorProps) {
+  const router = useRouter();
   const [options, setOptions] = useState<Option>({
     color: COLORS[0],
     model: MODELS.options[0],
@@ -67,12 +73,78 @@ export default function DesignConfigurator({
     y: 205,
   });
 
+  const { mutate: saveConfigure, isPending } = useMutation({
+    mutationKey: ["save-config"],
+    mutationFn: async (args: SaveConfigArgs) => {
+      await Promise.all([saveConfiguration(), saveConfig(args)]);
+    },
+    onError: () => {
+      toast("Something went wrong", {
+        description: "There was an error on our end. Please try again.",
+      });
+    },
+    onSuccess: () => {
+      router.push(`/configure/preview?id=${configId}`);
+    },
+  });
+
   const phoneCaseRef = useRef<HTMLDivElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+  const { startUpload } = useUploadThing("imageUploader");
 
   async function saveConfiguration() {
     try {
-    } catch (error) {}
+      const {
+        left: caseLeft,
+        top: caseTop,
+        width,
+        height,
+      } = phoneCaseRef.current!.getBoundingClientRect();
+      const { left: containerLeft, top: containerTop } =
+        containerRef.current!.getBoundingClientRect();
+
+      const leftOffset = caseLeft - containerLeft;
+      const topOffset = caseTop - containerTop;
+      const actualX = renderedPosition.x - leftOffset;
+      const actualY = renderedPosition.y - topOffset;
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+
+      const userImage = new Image();
+      userImage.crossOrigin = "anonymous";
+      userImage.src = imageUrl;
+      await new Promise((resolve) => (userImage.onload = resolve));
+
+      ctx?.drawImage(
+        userImage,
+        actualX,
+        actualY,
+        renderedDimension.width,
+        renderedDimension.height
+      );
+      const base64 = canvas.toDataURL();
+      const base64Data = base64.split(",")[1];
+
+      const blob = base64ToBlob(base64Data, "image/png");
+      const file = new File([blob], "filename.png", { type: "image/png" });
+      await startUpload([file], { configId });
+    } catch (error) {
+      toast.error("Something went wrong", {
+        description: "There was a problem saving your configuration.",
+      });
+    }
+  }
+
+  function base64ToBlob(base64: string, mimeType: string) {
+    const byteCharacters = atob(base64);
+    const byteNumbers = new Array(byteCharacters.length);
+    for (let i = 0; i < byteCharacters.length; i++) {
+      byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    const byteArray = new Uint8Array(byteNumbers);
+    return new Blob([byteArray], { type: mimeType });
   }
 
   return (
@@ -309,15 +381,27 @@ export default function DesignConfigurator({
                 )}
               </p>
               <Button
-                // isLoading={true}
-                disabled={true}
-                // loadingText="Saving"
-                onClick={() => {}}
+                disabled={isPending}
+                onClick={() =>
+                  saveConfigure({
+                    configId,
+                    color: options.color.value,
+                    model: options.model.value,
+                    material: options.material.value,
+                    finish: options.finish.value,
+                  })
+                }
                 size="sm"
                 className="w-full"
               >
-                Continue
-                <ArrowRight className="h-4 w-4 ml-1.5 inline" />
+                {isPending ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <>
+                    Continue
+                    <ArrowRight className="h-4 w-4 ml-1.5 inline" />
+                  </>
+                )}
               </Button>
             </div>
           </div>
