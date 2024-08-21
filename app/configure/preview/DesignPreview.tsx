@@ -60,10 +60,11 @@ export default function DesignPreview({
 
   function handleCheckout() {
     if (user) {
-      // create payment session
       createPaymentSession({ configId: id });
+      /* 
+        Note:Since stripe require certified business in India I am using basic checkout,but the normal workflow to stripe integration works
+      */
     } else {
-      // need to log in
       localStorage.setItem("configurationId", id);
       setIsLoginModalOpen(true);
     }
