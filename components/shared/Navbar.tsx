@@ -20,12 +20,7 @@ export default async function Navbar() {
             {user ? (
               <>
                 <SignOutButton>
-                  <Button
-                    className={buttonVariants({
-                      size: "sm",
-                      variant: "ghost",
-                    })}
-                  >
+                  <Button size="sm" variant="ghost">
                     Sign out
                     <LogOut className="ml-2 h-3.5 w-3.5" />
                   </Button>

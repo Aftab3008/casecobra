@@ -3,7 +3,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "next/navigation";
 import { Loader2 } from "lucide-react";
-// import PhonePreview from '@/components/PhonePreview'
 import { formatPrice } from "@/lib/utils";
 import { getPaymentStatus } from "@/lib/actions/actions";
 import PhonePreview from "./PhonePreview";
