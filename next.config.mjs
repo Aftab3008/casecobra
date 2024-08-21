@@ -4,7 +4,7 @@ const nextConfig = {
     return [
       {
         source: "/api/:auth*",
-        destination: "https://casecobra3008.kinde.com/:auth*",
+        destination: "https://casecobra3008.kinde.com/*",
       },
     ];
   },
