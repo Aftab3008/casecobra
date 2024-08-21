@@ -11,24 +11,24 @@ export function getColor(color: string): string {
 }
 
 export const formatPrice = (price: number) => {
-  const formatter = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'USD',
-  })
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+  });
 
-  return formatter.format(price)
-}
+  return formatter.format(price);
+};
 
 export function constructMetadata({
-  title = 'CaseCobra - custom high-quality phone cases',
-  description = 'Create custom high-quality phone cases in seconds',
-  image = '/thumbnail.png',
-  icons = '/favicon.ico',
+  title = "CaseCobra - custom high-quality phone cases",
+  description = "Create custom high-quality phone cases in seconds",
+  image = "/thumbnail.png",
+  icons = "/favicon.ico",
 }: {
-  title?: string
-  description?: string
-  image?: string
-  icons?: string
+  title?: string;
+  description?: string;
+  image?: string;
+  icons?: string;
 } = {}): Metadata {
   return {
     title,
@@ -39,13 +39,13 @@ export function constructMetadata({
       images: [{ url: image }],
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title,
       description,
       images: [image],
-      creator: '@joshtriedcoding',
+      creator: "@joshtriedcoding",
     },
     icons,
-    metadataBase: new URL("https://casecobra.vercel.app/")
-  }
+    metadataBase: new URL("https://casecobra-drab-psi.vercel.app/"),
+  };
 }
