@@ -1,13 +1,14 @@
 import Link from "next/link";
 import MaxWidthWrapper from "./MaxWidthWrapper";
-import { buttonVariants } from "../ui/button";
+import { Button, buttonVariants } from "../ui/button";
 import { ArrowRight, LogOut } from "lucide-react";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
+import { currentUser } from "@clerk/nextjs/server";
+import { SignOutButton } from "@clerk/nextjs";
 
 export default async function Navbar() {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
-  const isAdmin = user?.email === process.env.ADMIN_EMAIL;
+  const user = await currentUser();
+  const isAdmin =
+    user?.emailAddresses[0].emailAddress === process.env.ADMIN_EMAIL;
   return (
     <nav className="sticky z-[100] h-14 inset-x-0 top-0 w-full border-b border-gray-200 bg-white/75 backdrop-blur-lg transition-all">
       <MaxWidthWrapper>
@@ -18,16 +19,17 @@ export default async function Navbar() {
           <div className="h-full flex items-center space-x-4">
             {user ? (
               <>
-                <Link
-                  href="/api/auth/logout"
-                  className={buttonVariants({
-                    size: "sm",
-                    variant: "ghost",
-                  })}
-                >
-                  Sign out
-                  <LogOut className="ml-2 h-3.5 w-3.5" />
-                </Link>
+                <SignOutButton>
+                  <Button
+                    className={buttonVariants({
+                      size: "sm",
+                      variant: "ghost",
+                    })}
+                  >
+                    Sign out
+                    <LogOut className="ml-2 h-3.5 w-3.5" />
+                  </Button>
+                </SignOutButton>
                 {isAdmin ? (
                   <Link
                     href="/dashboard"
@@ -53,7 +55,7 @@ export default async function Navbar() {
             ) : (
               <>
                 <Link
-                  href="/api/auth/register"
+                  href="/sign-up"
                   className={buttonVariants({
                     size: "sm",
                     variant: "ghost",
@@ -63,7 +65,7 @@ export default async function Navbar() {
                 </Link>
 
                 <Link
-                  href="/api/auth/login"
+                  href="/sign-in"
                   className={buttonVariants({
                     size: "sm",
                     variant: "ghost",

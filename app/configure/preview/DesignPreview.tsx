@@ -13,8 +13,8 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Confetti from "react-dom-confetti";
 import { toast } from "sonner";
-import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 import LoginModal from "@/components/shared/LoginModal";
+import { useUser } from "@clerk/nextjs";
 
 export default function DesignPreview({
   configuration,
@@ -25,7 +25,7 @@ export default function DesignPreview({
   const [isLoginModalOpen, setIsLoginModalOpen] = useState<boolean>(false);
 
   const router = useRouter();
-  const { user } = useKindeBrowserClient();
+  const { user } = useUser();
 
   useEffect(() => setShowConfetti(true));
 

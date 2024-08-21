@@ -5,6 +5,7 @@ import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 import { Toaster } from "sonner";
 import Provider from "./_providers/Provider";
+import { ClerkProvider } from "@clerk/nextjs";
 
 const recursive = Recursive({ subsets: ["latin"] });
 
@@ -20,17 +21,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={recursive.className}>
-        <Navbar />
-        <main className="flex grainy-light flex-col min-h-[calc(100vh-3.5rem-1px)]">
-          <div className="flex flex-1 flex-col h-full">
-            <Provider>{children}</Provider>
-          </div>
-          <Footer />
-          <Toaster richColors position="top-center" />
-        </main>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={recursive.className}>
+          <Navbar />
+          <main className="flex grainy-light flex-col min-h-[calc(100vh-3.5rem-1px)]">
+            <div className="flex flex-1 flex-col h-full">
+              <Provider>{children}</Provider>
+            </div>
+            <Footer />
+            <Toaster richColors position="top-center" />
+          </main>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

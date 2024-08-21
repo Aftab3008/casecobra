@@ -9,9 +9,9 @@ import {
   PhoneModel,
 } from "@prisma/client";
 import { db } from "../db";
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 import { BASE_PRICE, PRODUCT_PRICES } from "@/constants";
 import { stripe } from "../stripe";
+import { currentUser } from "@clerk/nextjs/server";
 
 export type SaveConfigArgs = {
   color: CaseColor;
@@ -47,8 +47,7 @@ export async function createCheckoutSession({
     throw new Error("Configuration not found");
   }
 
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
+  const user = await currentUser();
 
   if (!user) {
     throw new Error("You must be logged in");
@@ -109,10 +108,9 @@ export async function createCheckoutSession({
 }
 
 export const getAuthStatus = async () => {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
+  const user = await currentUser();
 
-  if (!user?.id || !user.email) {
+  if (!user?.id || !user.emailAddresses[0].emailAddress) {
     throw new Error("Invalid user data");
   }
 
@@ -126,7 +124,7 @@ export const getAuthStatus = async () => {
     await db.user.create({
       data: {
         id: user.id,
-        email: user.email,
+        email: user.emailAddresses[0].emailAddress,
       },
     });
   }
@@ -135,10 +133,9 @@ export const getAuthStatus = async () => {
 };
 
 export const getPaymentStatus = async ({ orderId }: { orderId: string }) => {
-  const { getUser } = getKindeServerSession();
-  const user = await getUser();
+  const user = await currentUser();
 
-  if (!user?.id || !user.email) {
+  if (!user?.id || !user.emailAddresses[0].emailAddress) {
     throw new Error("You need to be logged in to view this page.");
   }
 
@@ -173,3 +170,16 @@ export const changeOrderStatus = async ({
     data: { status: newStatus },
   });
 };
+
+export async function createUser({ id, email }: { id: string; email: string }) {
+  const newUser = await db.user.create({
+    data: {
+      id,
+      email,
+    },
+  });
+  if (!newUser) {
+    throw new Error("Error creating user");
+  }
+  return { success: true };
+}
