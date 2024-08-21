@@ -7,7 +7,7 @@ const nextConfig = {
         headers: [
           {
             key: "Access-Control-Allow-Origin",
-            value: "https://casecobra-drab-psi.vercel.app",
+            value: "https://casecobra3008.kinde.com",
           },
           {
             key: "Access-Control-Allow-Methods",
