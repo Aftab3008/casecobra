@@ -4,7 +4,7 @@ const nextConfig = {
     return [
       {
         source: "/api/:path*",
-        destination: "https://casecobra3008.kinde.com/:path*",
+        destination: "https://casecobra-drab-psi.vercel.app/api/:path*",
       },
     ];
   },
