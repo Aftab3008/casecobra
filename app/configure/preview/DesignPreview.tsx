@@ -8,7 +8,7 @@ import { cn, formatPrice } from "@/lib/utils";
 import { COLORS } from "@/validators/option-validators";
 import { Configuration } from "@prisma/client";
 import { useMutation } from "@tanstack/react-query";
-import { ArrowRight, Check } from "lucide-react";
+import { ArrowRight, Check, Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Confetti from "react-dom-confetti";
@@ -46,7 +46,7 @@ export default function DesignPreview({
 
   if (finish === "textured") totalPrice += PRODUCT_PRICES.finish.textured;
 
-  const { mutate: createPaymentSession } = useMutation({
+  const { mutate: createPaymentSession, isPending } = useMutation({
     mutationKey: ["get-checkout-session"],
     mutationFn: createCheckoutSession,
     onSuccess: ({ url }) => {
@@ -61,9 +61,6 @@ export default function DesignPreview({
   function handleCheckout() {
     if (user) {
       createPaymentSession({ configId: id });
-      /* 
-        Note:Since stripe require certified business in India I am using basic checkout,but the normal workflow to stripe integration works
-      */
     } else {
       localStorage.setItem("configurationId", id);
       setIsLoginModalOpen(true);
@@ -163,9 +160,16 @@ export default function DesignPreview({
             <div className="mt-8 flex justify-end pb-12">
               <Button
                 onClick={() => handleCheckout()}
+                disabled={isPending}
                 className="px-4 sm:px-6 lg:px-8"
               >
-                Check out <ArrowRight className="h-4 w-4 ml-1.5 inline" />
+                {isPending ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  <>
+                    Check out <ArrowRight className="h-4 w-4 ml-1.5 inline" />
+                  </>
+                )}
               </Button>
             </div>
           </div>
