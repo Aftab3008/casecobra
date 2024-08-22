@@ -183,3 +183,16 @@ export async function createUser({ id, email }: { id: string; email: string }) {
   }
   return { success: true };
 }
+
+export async function getUserOrders({ userId }: { userId: string }) {
+  const orders = await db.order.findMany({
+    where: { userId },
+    include: {
+      configuration: true,
+      shippingAddress: true,
+      billingAddress: true,
+    },
+    orderBy: { createdAt: "desc" },
+  });
+  return orders;
+}

@@ -3,7 +3,8 @@ import MaxWidthWrapper from "./MaxWidthWrapper";
 import { Button, buttonVariants } from "../ui/button";
 import { ArrowRight, LogOut } from "lucide-react";
 import { currentUser } from "@clerk/nextjs/server";
-import { SignOutButton } from "@clerk/nextjs";
+import { SignOutButton, UserButton } from "@clerk/nextjs";
+import UserPortal from "./UserPortal";
 
 export default async function Navbar() {
   const user = await currentUser();
@@ -19,12 +20,12 @@ export default async function Navbar() {
           <div className="h-full flex items-center space-x-4">
             {user ? (
               <>
-                <SignOutButton>
+                {/* <SignOutButton>
                   <Button size="sm" variant="ghost">
                     Sign out
                     <LogOut className="ml-2 h-3.5 w-3.5" />
                   </Button>
-                </SignOutButton>
+                </SignOutButton> */}
                 {isAdmin ? (
                   <Link
                     href="/dashboard"
@@ -36,7 +37,13 @@ export default async function Navbar() {
                     Dashboard ✨
                   </Link>
                 ) : null}
-                <Link
+                <UserButton />
+                <UserPortal
+                  imageUrl={user.imageUrl}
+                  email={user.emailAddresses[0].emailAddress}
+                  id={user.id}
+                />
+                {/* <Link
                   href="/configure/upload"
                   className={buttonVariants({
                     size: "sm",
@@ -45,7 +52,7 @@ export default async function Navbar() {
                 >
                   Create case
                   <ArrowRight className="ml-1.5 h-5 w-5" />
-                </Link>
+                </Link> */}
               </>
             ) : (
               <>
